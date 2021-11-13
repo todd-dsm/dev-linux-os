@@ -1,0 +1,176 @@
+#	$OpenBSD: sshd_config,v 1.100 2016/08/15 12:32:04 naddy Exp $
+
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
+
+# This sshd was compiled with PATH=/usr/local/bin:/usr/bin
+
+# The strategy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options override the
+# default value.
+
+# If you want to change the port on a SELinux system, you have to tell
+# SELinux about this change.
+# semanage port -a -t ssh_port_t -p tcp #PORTNUMBER
+#
+#----------------------------------------------------------------------
+# The SSH daemon must be configured to only use the SSHv2 protocol
+# REF: https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-72251
+Protocol 2
+Port 22
+AddressFamily inet
+#ListenAddress 0.0.0.0    # Should ALWAYS be updated to the local IPv4 address of the system
+
+HostKey /etc/ssh/ssh_host_rsa_key
+#HostKey /etc/ssh/ssh_host_dsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+# Ciphers and keying
+# Configure SSH to use FIPS 140-2 approved cryptographic algorithms
+# REF: https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-12-14/finding/V-72221
+ciphers aes128-ctr,aes256-ctr
+#RekeyLimit default none
+
+# The SSH daemon is configured to only use MACs employing FIPS 140-2-approved ciphers
+# REF: https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-72253
+MACs hmac-sha2-256,hmac-sha2-512
+
+
+
+# Logging
+#SyslogFacility AUTH
+SyslogFacility AUTHPRIV
+#LogLevel INFO
+
+# Authentication:
+
+#LoginGraceTime 2m
+# The system must not permit direct logons to the root account using remote access via SSH
+# REF: https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-72247
+PermitRootLogin no
+# The SSH daemon must perform strict mode checking of home directory configuration files
+# REF: https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-72263
+StrictModes yes
+#MaxAuthTries 6
+#MaxSessions 10
+
+#PubkeyAuthentication yes
+
+# The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
+# but this is overridden so installations will only check .ssh/authorized_keys
+AuthorizedKeysFile .ssh/authorized_keys
+
+#AuthorizedPrincipalsFile none
+
+# For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
+# The operating system must not allow a non-certificate trusted host SSH logon to the system: default
+# https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-71959
+HostbasedAuthentication no
+# Change to yes if you don't trust ~/.ssh/known_hosts for
+# HostbasedAuthentication
+# The SSH daemon must not allow authentication using known hosts authentication
+# REF: https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-72249
+IgnoreUserKnownHosts yes
+# Don't read the user's ~/.rhosts and ~/.shosts files
+# The SSH daemon must not allow authentication using rhosts authentication
+# https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-72243
+IgnoreRhosts yes
+
+# To disable tunneled clear text passwords, change to no here!
+# The SSH daemon must not allow authentication using an empty password: default
+# REF: https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-71939
+#PermitEmptyPasswords no
+PasswordAuthentication no
+
+# Change to no to disable s/key passwords
+ChallengeResponseAuthentication no
+
+# Kerberos options
+# The SSH daemon must not permit Kerberos authentication unless needed
+# REF: https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-72261
+KerberosAuthentication no
+#KerberosOrLocalPasswd yes
+#KerberosTicketCleanup yes
+#KerberosGetAFSToken no
+#KerberosUseKuserok yes
+
+# GSSAPI options
+# The SSH daemon must not permit GSSAPI authentication unless needed
+# REF: https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-72259
+GSSAPIAuthentication no
+#GSSAPICleanupCredentials no
+#GSSAPIStrictAcceptorCheck yes
+#GSSAPIKeyExchange no
+#GSSAPIEnablek5users no
+
+# Set this to 'yes' to enable PAM authentication, account processing,
+# and session processing. If this is enabled, PAM authentication will
+# be allowed through the ChallengeResponseAuthentication and
+# PasswordAuthentication.  Depending on your PAM configuration,
+# PAM authentication via ChallengeResponseAuthentication may bypass
+# the setting of "PermitRootLogin without-password".
+# If you just want the PAM account and session checks to run without
+# PAM authentication, then enable this but set PasswordAuthentication
+# and ChallengeResponseAuthentication to 'no'.
+# WARNING: 'UsePAM no' is not supported in Red Hat Enterprise Linux and may cause several
+# problems.
+UsePAM yes
+
+#AllowAgentForwarding yes
+#AllowTcpForwarding yes
+#GatewayPorts no
+X11Forwarding yes
+#X11DisplayOffset 10
+#X11UseLocalhost yes
+#PermitTTY yes
+#PrintMotd yes
+#PrintLastLog yes
+#TCPKeepAlive yes
+#UseLogin no
+# The SSH daemon must use privilege separation
+# REF: https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-72265
+UsePrivilegeSeparation sandbox
+# The operating system must not allow users to override SSH environment variables
+# REF: https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-71957
+PermitUserEnvironment no
+# The SSH daemon must not allow compression or must only allow compression after successful authentication
+# REF: https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-72267
+Compression delayed
+# All network connections associated with SSH traffic must terminate at the end of the session or
+# after 10 minutes of inactivity, except to fulfill documented and validated mission requirements
+# REF: https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-72237
+ClientAliveInterval 600
+# All network connections associated with SSH traffic must terminate after a period of inactivity
+# REF: https://www.stigviewer.com/stig/red_hat_enterprise_linux_7/2017-07-08/finding/V-72241
+ClientAliveCountMax 0
+#ShowPatchLevel no
+#UseDNS yes
+#PidFile /var/run/sshd.pid
+#MaxStartups 10:30:100
+#PermitTunnel no
+#ChrootDirectory none
+#VersionAddendum none
+
+# no default banner path
+#Banner none
+
+# Accept locale-related environment variables
+AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+AcceptEnv XMODIFIERS
+
+# override default of no subsystems
+Subsystem sftp	/usr/libexec/openssh/sftp-server
+
+# Example of overriding settings on a per-user basis
+#Match User anoncvs
+#	X11Forwarding no
+#	AllowTcpForwarding no
+#	PermitTTY no
+#	ForceCommand cvs server
+
+AuthorizedKeysCommand /opt/aws/bin/eic_run_authorized_keys %u %f
+AuthorizedKeysCommandUser ec2-instance-connect

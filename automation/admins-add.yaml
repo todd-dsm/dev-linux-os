@@ -1,0 +1,35 @@
+---
+- hosts: default
+  become: yes
+  vars:
+    users:
+    - tthomas
+    - userx
+  tasks:
+  - name: "Create user accounts and add users to groups"
+    user:
+      name: "{{ item }}"
+      groups: "wheel"
+    with_items: "{{ users }}"
+  - name: "Add authorized keys"
+    authorized_key:
+      user: "{{ item }}"
+      key: "{{ lookup('file', 'files/'+ item + '.key.pub') }}"
+    with_items: "{{ users }}"
+  - name: "Allow admin users to sudo without a password"
+    lineinfile:
+      dest: "/etc/sudoers" # path: in version 2.3
+      state: "present"
+      regexp: "^%wheel"
+      line: "%wheel ALL=(ALL) NOPASSWD: ALL"
+  - name: "Push STIG'd sshd Controls to system"
+    ansible.builtin.copy:
+      src: configs/sshd_config
+      dest: /etc/ssh/sshd_config
+      owner: root
+      group: root
+      mode: '0600'
+  - name: "Restart service sshd"
+    ansible.builtin.service:
+      name: sshd
+      state: restarted
