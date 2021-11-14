@@ -26,9 +26,9 @@ build {
 # Everything below this point will rarely change - if ever.
 # https://www.packer.io/docs/builders/amazon/ebs
 source "amazon-ebs" "amazonlinux" {
-  ami_name      = "var.myAMI"
-  instance_type = "t2.micro"
+  ami_name      = "golden-amazonlinux"
   region        = "us-west-2"
+  instance_type = "t2.micro"
   source_ami_filter {
     filters = {
       name                = "amzn2-ami-hvm-2*"
@@ -42,9 +42,9 @@ source "amazon-ebs" "amazonlinux" {
   ssh_username          = "ec2-user"
   force_deregister      = true
   force_delete_snapshot = true
-  skip_create_ami       = true # toggle this for testing: true=dry-run, false=build
+  skip_create_ami       = false # toggle this for testing: true=dry-run, false=build
   tags = {
-    Name          = "var.myAMI"
+    Name          = "golden-amazonlinux"
     Base_AMI_ID   = "{{ .SourceAMI }}"
     Base_AMI_Name = "{{ .SourceAMIName }}"
     image_type    = "golden"
