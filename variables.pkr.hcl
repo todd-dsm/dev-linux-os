@@ -1,0 +1,1 @@
+myAMI = "golden-amazonlinux"

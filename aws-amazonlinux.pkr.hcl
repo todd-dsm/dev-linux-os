@@ -9,7 +9,7 @@ build {
     # Run commands as root during the install
     execute_command = "echo 'ec2-user' | sudo -S env {{ .Vars }} {{ .Path }}"
     inline = [
-      "echo Updating the System...",
+      "echo Updating the $FOO System...",
       "sleep 3",
       "yum update -y",
       "yum install -y tree lsof dnsutils",
@@ -26,9 +26,9 @@ build {
 # Everything below this point will rarely change - if ever.
 # https://www.packer.io/docs/builders/amazon/ebs
 source "amazon-ebs" "amazonlinux" {
-  ami_name      = "golden-amazonlinux"
+  ami_name      = "var.myAMI"
   instance_type = "t2.micro"
-  region        = "us-east-1"
+  region        = "us-west-2"
   source_ami_filter {
     filters = {
       name                = "amzn2-ami-hvm-2*"
@@ -44,7 +44,7 @@ source "amazon-ebs" "amazonlinux" {
   force_delete_snapshot = true
   skip_create_ami       = true  # toggle this for testing: true=dry-run, false=build
   tags = {
-    Name          = "golden-amazonlinux"
+    Name          = "var.myAMI"
     Base_AMI_ID   = "{{ .SourceAMI }}"
     Base_AMI_Name = "{{ .SourceAMIName }}"
     image_type    = "golden"
