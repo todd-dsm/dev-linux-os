@@ -1,7 +1,10 @@
+# build > sources L2-3: refers to the 'source "amazon-ebs"' block below
 build {
   sources = [
     "source.amazon-ebs.amazonlinux"
   ]
+  # Run shell script to install some packages
+  # REF: https://www.packer.io/docs/provisioners/shell
   provisioner "shell" {
     environment_vars = [
       "FOO=HelloWorld",
@@ -16,6 +19,7 @@ build {
     ]
   }
   # Run Ansible job to build accounts
+  # REF: https://www.packer.io/docs/provisioners/ansible/ansible
   provisioner "ansible" {
     user          = "ec2-user"
     playbook_file = "automation/admins-add.yaml"
@@ -26,9 +30,17 @@ build {
 # Everything below this point will rarely change - if ever.
 # https://www.packer.io/docs/builders/amazon/ebs
 source "amazon-ebs" "amazonlinux" {
-  ami_name      = "golden-amazonlinux"
-  region        = "us-west-2"
-  instance_type = "t2.micro"
+  ami_name              = "golden-amazonlinux"
+  region                = "us-west-2"
+  instance_type         = "t2.micro"
+  ssh_username          = "ec2-user"
+  force_deregister      = true
+  force_delete_snapshot = true
+  skip_create_ami       = false # toggle this for testing: true=dry-run, false=build
+
+  # Using a filter to find the latest image-id instead of a Data Source
+  # REF: https://www.packer.io/docs/builders/amazon/ebs#source_ami_filter
+  # REF: https://www.packer.io/docs/datasources/amazon/ami
   source_ami_filter {
     filters = {
       name                = "amzn2-ami-hvm-2*"
@@ -39,10 +51,9 @@ source "amazon-ebs" "amazonlinux" {
     most_recent = true
     owners      = ["amazon"]
   }
-  ssh_username          = "ec2-user"
-  force_deregister      = true
-  force_delete_snapshot = true
-  skip_create_ami       = false # toggle this for testing: true=dry-run, false=build
+
+  # Uses the Template Engine to tag the image
+  # REF: https://www.packer.io/docs/templates/legacy_json_templates/engine#template-engine
   tags = {
     Name          = "golden-amazonlinux"
     Base_AMI_ID   = "{{ .SourceAMI }}"
@@ -51,6 +62,8 @@ source "amazon-ebs" "amazonlinux" {
   }
 }
 
+# Required Plugins
+# REF: https://www.packer.io/docs/plugins
 packer {
   required_plugins {
     amazon = {

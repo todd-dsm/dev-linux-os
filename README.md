@@ -8,17 +8,17 @@ If you would like to use this code, it's probably best to fork it into your own 
 
 ## System Setup
 
-Follow the [one-time-setup] instructuions then resume here.
+Follow the [one-time-setup] instructions then resume here.
 
 ---
 
 ## Amazon Linux
 
-At present this is the simplest representation of a Packer build. It satisfies some basic reuqirements:
+At present this is the simplest representation of a Packer build. It satisfies some basic requirements:
 
 1. automatically finds the latest ami id for the specified distro
 2. leaves a hook to tie in some automation ([Ansible] but there are other [Provisioners])
-3. stores the resulting build in your private amis (over-writes any privious amis of the same name)
+3. stores the resulting build in your private AMIs (over-writes any previous AMIs of the same name)
 
 ## Builds
 
@@ -31,10 +31,9 @@ Installed plugin github.com/hashicorp/amazon v1.0.4...
 ```
 
 
-Before running a build toggle the boolean for `skip_create_ami` during testing:
-
-* A build takes 9 minutes 2 seconds: `false`
-* A test run takes 1 minute 54 seconds seconds: `true`.
+Before running a build toggle the boolean for `skip_create_ami` during testing; a build takes around: 
+* ~3.5 minutes: `false`
+* ~2 minutes: `true`.
 
 Then just: `packer build aws-amazonlinux.pkr.hcl`
 
