@@ -17,7 +17,7 @@ build {
   }
   # Run Ansible job to build accounts
   provisioner "ansible" {
-    user = "ec2-user"
+    user          = "ec2-user"
     playbook_file = "automation/admins-add.yaml"
   }
 }
@@ -42,7 +42,7 @@ source "amazon-ebs" "amazonlinux" {
   ssh_username          = "ec2-user"
   force_deregister      = true
   force_delete_snapshot = true
-  skip_create_ami       = true  # toggle this for testing: true=dry-run, false=build
+  skip_create_ami       = true # toggle this for testing: true=dry-run, false=build
   tags = {
     Name          = "var.myAMI"
     Base_AMI_ID   = "{{ .SourceAMI }}"
