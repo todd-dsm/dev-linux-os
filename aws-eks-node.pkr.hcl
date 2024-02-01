@@ -30,20 +30,22 @@ build {
 # Everything below this point will rarely change - if ever.
 # https://www.packer.io/docs/builders/amazon/ebs
 source "amazon-ebs" "amazonlinux" {
-  ami_name              = "golden-amazonlinux"
-  region                = "us-west-2"
-  instance_type         = "t2.micro"
-  ssh_username          = "ec2-user"
-  force_deregister      = true
-  force_delete_snapshot = true
-  skip_create_ami       = false # toggle this for testing: true=dry-run, false=build
+  ami_name                    = "eks-tester"
+  region                      = "us-gov-east-1"
+  instance_type               = "t2.micro"
+  ssh_username                = "ec2-user"
+  ssh_keypair_name            = "tthomas.pub"
+  associate_public_ip_address = true
+  force_deregister            = true
+  force_delete_snapshot       = true
+  skip_create_ami             = true # toggle this for testing: true=dry-run, false=build
 
   # Using a filter to find the latest image-id instead of a Data Source
   # REF: https://www.packer.io/docs/builders/amazon/ebs#source_ami_filter
   # REF: https://www.packer.io/docs/datasources/amazon/ami
   source_ami_filter {
     filters = {
-      name                = "amzn2-ami-hvm-2*"
+      name                = "amazon-eks-node-1.29-*"
       architecture        = "x86_64"
       virtualization-type = "hvm"
       root-device-type    = "ebs"
@@ -55,7 +57,7 @@ source "amazon-ebs" "amazonlinux" {
   # Uses the Template Engine to tag the image
   # REF: https://www.packer.io/docs/templates/legacy_json_templates/engine#template-engine
   tags = {
-    Name          = "golden-amazonlinux"
+    Name          = "eks-tester"
     Base_AMI_ID   = "{{ .SourceAMI }}"
     Base_AMI_Name = "{{ .SourceAMIName }}"
     image_type    = "golden"

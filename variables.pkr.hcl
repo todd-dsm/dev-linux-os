@@ -2,6 +2,6 @@
             VARIABLES
 */
 variable "myAMI" {
-  default = "golden-amazonlinux"
+  default = "eks-tester"
   type    = string
 }

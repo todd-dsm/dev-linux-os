@@ -1,0 +1,10 @@
+# Required Plugins
+# REF: https://www.packer.io/docs/plugins
+packer {
+  required_plugins {
+    amazon = {
+      version = "~> 1.0.0"
+      source  = "github.com/hashicorp/amazon"
+    }
+  }
+}
