@@ -23,6 +23,10 @@ build {
   provisioner "ansible" {
     user          = "ec2-user"
     playbook_file = "automation/admins-add.yaml"
+    extra_arguments = [
+      "--scp-extra-args",
+      "'-O'"
+    ]
   }
 }
 
@@ -31,12 +35,12 @@ build {
 # https://www.packer.io/docs/builders/amazon/ebs
 source "amazon-ebs" "amazonlinux" {
   ami_name              = "golden-amazonlinux"
-  region                = "us-west-2"
-  instance_type         = "t2.micro"
+  region                = "us-gov-east-1"
+  instance_type         = "t3.micro"
   ssh_username          = "ec2-user"
   force_deregister      = true
   force_delete_snapshot = true
-  skip_create_ami       = false # toggle this for testing: true=dry-run, false=build
+  skip_create_ami       = true # toggle this for testing: true=dry-run, false=build
 
   # Using a filter to find the latest image-id instead of a Data Source
   # REF: https://www.packer.io/docs/builders/amazon/ebs#source_ami_filter

@@ -3,8 +3,7 @@
   become: yes
   vars:
     users:
-    - tthomas
-    - userx
+    - toddthomas
   tasks:
   - name: "Create user accounts and add users to groups"
     user:

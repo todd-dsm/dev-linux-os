@@ -1,7 +1,7 @@
 # build > sources L2-3: refers to the 'source "amazon-ebs"' block below
 build {
   sources = [
-    "source.amazon-ebs.amazonlinux"
+    "source.amazon-ebs.eks-node"
   ]
   # Run shell script to install some packages
   # REF: https://www.packer.io/docs/provisioners/shell
@@ -15,7 +15,8 @@ build {
       "echo Updating the $FOO System...",
       "sleep 3",
       "yum update -y",
-      "yum install -y tree lsof dnsutils",
+      "yum install -y tree lsof bind-utils",
+      "systemctl start sshd.service"
     ]
   }
   # Run Ansible job to build accounts
@@ -23,22 +24,25 @@ build {
   provisioner "ansible" {
     user          = "ec2-user"
     playbook_file = "automation/admins-add.yaml"
+    extra_arguments = [
+      "--scp-extra-args",
+      "'-O'"
+    ]
   }
 }
 
 # This image is governed by the AMI Builder (EBS backed)
 # Everything below this point will rarely change - if ever.
 # https://www.packer.io/docs/builders/amazon/ebs
-source "amazon-ebs" "amazonlinux" {
+source "amazon-ebs" "eks-node" {
   ami_name                    = "eks-tester"
   region                      = "us-gov-east-1"
-  instance_type               = "t2.micro"
+  instance_type               = "t3.micro"
   ssh_username                = "ec2-user"
-  ssh_keypair_name            = "tthomas.pub"
   associate_public_ip_address = true
   force_deregister            = true
   force_delete_snapshot       = true
-  skip_create_ami             = true # toggle this for testing: true=dry-run, false=build
+  skip_create_ami             = false # toggle this for testing: true=dry-run, false=build
 
   # Using a filter to find the latest image-id instead of a Data Source
   # REF: https://www.packer.io/docs/builders/amazon/ebs#source_ami_filter
@@ -60,6 +64,6 @@ source "amazon-ebs" "amazonlinux" {
     Name          = "eks-tester"
     Base_AMI_ID   = "{{ .SourceAMI }}"
     Base_AMI_Name = "{{ .SourceAMIName }}"
-    image_type    = "golden"
+    image_type    = "diagnostic"
   }
 }
