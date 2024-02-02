@@ -2,9 +2,13 @@
 
 Automated AMI builds driven by Packer
 
-## Foreword
+## Purpose
 
-If you would like to use this code, it's probably best to fork it into your own *personal* repo and make modifications there.
+Using Kubernetes means you don't need to worry about nodes. But, sometimes, when dealing with newer/problematic software it becomes helpful for troubleshooting.
+
+Herein are Packer configurations to build Amazon Linux AMIs for diagnostic purposes.
+
+If you would like to use this code, it's probably best to fork it into your own *personal* repo/dev-space and make modifications there.
 
 ## System Setup
 
@@ -30,14 +34,26 @@ First, initialize Packer configuration
 Installed plugin github.com/hashicorp/amazon v1.0.4...
 ```
 
+Before running a build, open the target file and toggle the boolean for `skip_create_ami` during testing; this speeds things up.
 
-Before running a build toggle the boolean for `skip_create_ami` during testing; a build takes around: 
-* ~3.5 minutes: `false`
+If you make a mistake a build could take around:
+* ~5 minutes: `false`
 * ~2 minutes: `true`.
 
-Then just: `packer build aws-amazonlinux.pkr.hcl`
+So there could be a longer time penalty for making a small mistake. After the testing phase, set `skip_create_ami` to `false` and run the build again:
 
-Builds can now be scheduled to run periodically: nightly, monthly, quarterly, whatever.
+```shell
+packer build os-definition.pkr.hcl
+```
+
+At present there are only 2:
+
+* `aws-amazonlinux.pkr.hcl` (general purposes)
+* `aws-eks-node.pkr.hcl` (Kubernetes worker node)
+
+Both are Red Hat-based, so the automation you generate can be reused on almost any RH distro.
+
+Once the definitions are stable, the builds can be scheduled to run periodically: nightly, monthly, quarterly, whatever.
 
 ---
 
