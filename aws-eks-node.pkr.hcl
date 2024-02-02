@@ -15,8 +15,7 @@ build {
       "echo Updating the $FOO System...",
       "sleep 3",
       "yum update -y",
-      "yum install -y tree lsof bind-utils",
-      "systemctl start sshd.service"
+      "yum install -y tree lsof bind-utils"
     ]
   }
   # Run Ansible job to build accounts
@@ -61,9 +60,12 @@ source "amazon-ebs" "eks-node" {
   # Uses the Template Engine to tag the image
   # REF: https://www.packer.io/docs/templates/legacy_json_templates/engine#template-engine
   tags = {
-    Name          = "eks-tester"
-    Base_AMI_ID   = "{{ .SourceAMI }}"
-    Base_AMI_Name = "{{ .SourceAMIName }}"
-    image_type    = "diagnostic"
+    Name                     = "eks-tester"
+    Base_AMI_ID              = "{{ .SourceAMI }}"
+    Base_AMI_Name            = "{{ .SourceAMIName }}"
+    image_type               = "diagnostic"
+    "karpenter.sh/discovery" = "reproduction"
+    "kubernetes.io/arch"     = "x86_64"
+    "ssm-agent"              = "installed"
   }
 }
