@@ -35,7 +35,7 @@ build {
 # https://www.packer.io/docs/builders/amazon/ebs
 source "amazon-ebs" "amazonlinux" {
   ami_name              = "golden-amazonlinux"
-  region                = "us-gov-east-1"
+  region                = "us-east-1"
   instance_type         = "t3.micro"
   ssh_username          = "ec2-user"
   force_deregister      = true
