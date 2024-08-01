@@ -37,6 +37,7 @@ Installed plugin github.com/hashicorp/amazon v1.0.4...
 Before running a build, open the target file and toggle the boolean for `skip_create_ami` during testing; this speeds things up.
 
 If you make a mistake a build could take around:
+
 * ~5 minutes: `false`
 * ~2 minutes: `true`.
 
