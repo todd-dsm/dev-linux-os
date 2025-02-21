@@ -4,11 +4,11 @@ Automated AMI builds driven by Packer
 
 ## Purpose
 
-Using Kubernetes means you don't need to worry about nodes. But, sometimes, when dealing with newer/problematic software it becomes helpful for troubleshooting.
+Using Kubernetes means you don't need to worry about nodes. But not all software is Kubernetes-ready. Occasionally, deploying to Linux is still the answer.
 
-Herein are Packer configurations to build Amazon Linux AMIs for diagnostic purposes.
+Herein are Packer configurations to support automated Amazon Linux AMI builds.
 
-If you would like to use this code, it's probably best to fork it into your own *personal* repo/dev-space and make modifications there.
+If you would like to use this code, it's probably best to fork it into the *project* repo/dev-space and make modifications there.
 
 ## System Setup
 
@@ -39,20 +39,27 @@ Before running a build, open the `variables.auto.pkrvars.hcl` file and toggle th
 If you make a mistake a build could take around:
 
 * ~6 minutes: `false`
-* ~2 minutes: `true`.
+* ~3 minutes: `true`.
 
 So there could be a longer time penalty for making a small mistake. After the testing phase, set `skip_create_ami` to `false` and run the build again:
+
+
+## Variables
+
+It's very important to understand that the variable file names are specific - do NOT change the names of the files.
+
+Also, as the `variables.auto.pkrvars.hcl` name implies, these variables don't need to be called out during the build. They are automatically loaded by Packer. So, the build is kicked off by:
 
 ```shell
 packer build ami-definition.pkr.hcl
 ```
 
-At present there are only 2 `ami-definition` files:
+At present, there are only 2 `ami-definition` files:
 
 * `aws-amazonlinux.pkr.hcl` (general purposes)
 * `aws-eks-node.pkr.hcl` (Kubernetes worker node; in its own branch)
 
-Both are Red Hat-based, so the automation you generate can be reused on almost any RH distro.
+Both are Red Hat-based, so the automation generated in Ansible has a strong chance of being reusable on any RH-based Linux distro.
 
 Once the definitions are stable, the builds can be scheduled to run periodically: nightly, monthly, quarterly, whatever.
 
