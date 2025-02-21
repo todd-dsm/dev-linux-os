@@ -20,9 +20,9 @@ Follow the [one-time-setup] instructions then resume here.
 
 At present this is the simplest representation of a Packer build. It satisfies some basic requirements:
 
-1. automatically finds the latest ami id for the specified distro
-2. leaves a hook to tie in some automation ([Ansible] but there are other [Provisioners])
-3. stores the resulting build in your private AMIs (over-writes any previous AMIs of the same name)
+1. Automatically finds the latest ami id for the specified distro
+2. Leaves a hook to tie in some automation ([Ansible] but there are other [Provisioners]), then
+3. Stores the resulting build in your private AMIs (over-writes any previous AMIs of the same name)
 
 ## Builds
 
