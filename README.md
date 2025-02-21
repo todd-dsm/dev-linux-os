@@ -34,23 +34,23 @@ First, initialize Packer configuration
 Installed plugin github.com/hashicorp/amazon v1.0.4...
 ```
 
-Before running a build, open the target file and toggle the boolean for `skip_create_ami` during testing; this speeds things up.
+Before running a build, open the `variables.auto.pkrvars.hcl` file and toggle the boolean for `skip_create_ami` during testing; this speeds things up.
 
 If you make a mistake a build could take around:
 
-* ~5 minutes: `false`
+* ~6 minutes: `false`
 * ~2 minutes: `true`.
 
 So there could be a longer time penalty for making a small mistake. After the testing phase, set `skip_create_ami` to `false` and run the build again:
 
 ```shell
-packer build os-definition.pkr.hcl
+packer build ami-definition.pkr.hcl
 ```
 
-At present there are only 2:
+At present there are only 2 `ami-definition` files:
 
 * `aws-amazonlinux.pkr.hcl` (general purposes)
-* `aws-eks-node.pkr.hcl` (Kubernetes worker node)
+* `aws-eks-node.pkr.hcl` (Kubernetes worker node; in its own branch)
 
 Both are Red Hat-based, so the automation you generate can be reused on almost any RH distro.
 
