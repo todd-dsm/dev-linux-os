@@ -4,11 +4,16 @@ Automated AMI builds driven by Packer
 
 ## Purpose
 
-Using Kubernetes means you don't need to worry about nodes. But, sometimes, when dealing with newer/problematic software it becomes helpful for troubleshooting.
+This is *one* way to customize Kubernetes nodes; it's typically only necessary for extreme edge cases. The ideal state for a Kubernetes worker is to be as dumb (as little configuration) as possible; it's a worker bee after all.
 
-Herein are Packer configurations to build Amazon Linux AMIs for diagnostic purposes.
+However, when the need arises, this process gives back a lot of time.
 
-If you would like to use this code, it's probably best to fork it into your own *personal* repo/dev-space and make modifications there.
+If you would like to use this code, it's probably best to fork it into the *project* repo/dev-space and make modifications there.
+
+```shell
+        ***** This build is currently FAILING; will solve as time permits: *****
+        > ansible-core requires a minimum of Python version 3.8. Current version: 3.7.16
+```
 
 ## System Setup
 
@@ -47,12 +52,9 @@ So there could be a longer time penalty for making a small mistake. After the te
 packer build ami-definition.pkr.hcl
 ```
 
-At present there are only 2 `ami-definition` files:
+At present there is only 1 `ami-definition` file: `aws-eks-node.pkr.hcl`
 
-* `aws-amazonlinux.pkr.hcl` (general purposes)
-* `aws-eks-node.pkr.hcl` (Kubernetes worker node; in its own branch)
-
-Both are Red Hat-based, so the automation you generate can be reused on almost any RH distro.
+It is Red Hat-based, so the automation you generate can be reused on almost any RH distro.
 
 Once the definitions are stable, the builds can be scheduled to run periodically: nightly, monthly, quarterly, whatever.
 
