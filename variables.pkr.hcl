@@ -1,7 +1,7 @@
 /*
             VARIABLES
 */
-variable "myAMI" {
-  default = "eks-tester"
-  type    = string
+variable "image_name" {
+  description = "The final AMI name."
+  type = string
 }
