@@ -10,7 +10,7 @@ build {
       "FOO=HelloWorld",
     ]
     # Run commands as root during the install
-    execute_command = "echo 'ec2-user' | sudo -S env {{ .Vars }} {{ .Path }}"
+    execute_command = "echo var.default_ami_user | sudo -S env {{ .Vars }} {{ .Path }}"
     inline = [
       "echo Updating the $FOO System...",
       "sleep 3",
@@ -21,7 +21,7 @@ build {
   # Run Ansible job to build accounts
   # REF: https://www.packer.io/docs/provisioners/ansible/ansible
   provisioner "ansible" {
-    user          = "ec2-user"
+    user          = var.default_ami_user
     playbook_file = "automation/admins-add.yaml"
     extra_arguments = [
       "--scp-extra-args",
@@ -34,14 +34,14 @@ build {
 # Everything below this point will rarely change - if ever.
 # https://www.packer.io/docs/builders/amazon/ebs
 source "amazon-ebs" "eks-node" {
-  ami_name                    = "eks-tester"
-  region                      = "us-gov-east-1"
-  instance_type               = "t3.micro"
-  ssh_username                = "ec2-user"
+  ami_name                    = var.image_name
+  region                      = var.aws_region
+  instance_type               = var.instance_type
+  ssh_username                = var.default_ami_user
   associate_public_ip_address = true
   force_deregister            = true
   force_delete_snapshot       = true
-  skip_create_ami             = false # toggle this for testing: true=dry-run, false=build
+  skip_create_ami             = var.skip_create_ami
 
   # Using a filter to find the latest image-id instead of a Data Source
   # REF: https://www.packer.io/docs/builders/amazon/ebs#source_ami_filter
@@ -60,7 +60,7 @@ source "amazon-ebs" "eks-node" {
   # Uses the Template Engine to tag the image
   # REF: https://www.packer.io/docs/templates/legacy_json_templates/engine#template-engine
   tags = {
-    Name                     = "eks-tester"
+    Name                     = var.image_name
     Base_AMI_ID              = "{{ .SourceAMI }}"
     Base_AMI_Name            = "{{ .SourceAMIName }}"
     image_type               = "diagnostic"
