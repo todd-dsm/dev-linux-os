@@ -10,7 +10,7 @@ build {
       "FOO=HelloWorld",
     ]
     # Run commands as root during the install
-    execute_command = "echo 'ec2-user' | sudo -S env {{ .Vars }} {{ .Path }}"
+    execute_command = "echo var.default_ami_user | sudo -S env {{ .Vars }} {{ .Path }}"
     inline = [
       "echo Updating the $HOSTNAME System...",
       "sleep 3",
@@ -21,7 +21,7 @@ build {
   # Run Ansible job to build accounts
   # REF: https://www.packer.io/docs/provisioners/ansible/ansible
   provisioner "ansible" {
-    user          = "ec2-user"
+    user          = var.default_ami_user
     playbook_file = "automation/admins-add.yaml"
     extra_arguments = [
       "--scp-extra-args",
@@ -30,19 +30,17 @@ build {
   }
 }
 
-
-
 # This image is governed by the AMI Builder (EBS backed)
 # Everything below this point will rarely change - if ever.
 # https://www.packer.io/docs/builders/amazon/ebs
 source "amazon-ebs" "amazonlinux" {
   ami_name              = var.image_name
-  region                = "us-east-1"
-  instance_type         = "t3.micro"
-  ssh_username          = "ec2-user"
+  region                = var.aws_region
+  instance_type         = var.instance_type
+  ssh_username          = var.default_ami_user
   force_deregister      = true
   force_delete_snapshot = true
-  skip_create_ami       = false # toggle this for testing: true=dry-run, false=build
+  skip_create_ami       = var.skip_create_ami # defaults to true
 
   # Using a filter to find the latest image-id instead of a Data Source
   # REF: https://www.packer.io/docs/builders/amazon/ebs#source_ami_filter
